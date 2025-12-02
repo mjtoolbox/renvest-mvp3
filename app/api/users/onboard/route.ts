@@ -5,7 +5,25 @@ import crypto from 'crypto';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { firstName, lastName, email, password, role, phone } = body;
+    // Coerce incoming values to strings and protect against accidental arrays
+    const rawFirst = body.firstName;
+    const rawLast = body.lastName;
+    const rawEmail = body.email;
+    const rawPassword = body.password;
+    const rawRole = body.role;
+    const phone = body.phone;
+
+    const coerce = (v: any) => {
+      if (v == null) return '';
+      if (Array.isArray(v)) return String(v[0]);
+      return String(v);
+    };
+
+    const firstName = coerce(rawFirst).trim();
+    const lastName = coerce(rawLast).trim();
+    const email = coerce(rawEmail).trim();
+    const password = coerce(rawPassword);
+    const role = coerce(rawRole).trim();
 
     if (!firstName || !lastName || !email || !password || !role) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -17,6 +35,11 @@ export async function POST(req: Request) {
     const existing = await DB.getUserByEmail(normalizedEmail);
     if (existing) {
       return NextResponse.json({ error: 'Email already in use' }, { status: 409 });
+    }
+
+    // Enforce reasonable length constraints that match DB schema
+    if (firstName.length > 255 || lastName.length > 100) {
+      return NextResponse.json({ error: 'Name fields exceed allowed length' }, { status: 400 });
     }
 
     // Hash the password with Node's crypto (scrypt) and a random salt

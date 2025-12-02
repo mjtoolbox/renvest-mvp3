@@ -55,7 +55,7 @@ export default class DB {
     if (!pool) throw new Error('Database not configured. Set DATABASE_URL in your environment.');
 
     const insert = await pool.query(
-      'INSERT INTO "User" (firstName, lastName, email, passwordHash, role, stripeAccountId) VALUES ($1, $2, $3, $4, $5, $6) RETURNING userId, firstName, lastName, email, role, createdAt',
+      'INSERT INTO renvestuser (firstName, lastName, email, passwordHash, role, stripeAccountId) VALUES ($1, $2, $3, $4, $5, $6) RETURNING userId, firstName, lastName, email, role, createdAt',
       [firstName, lastName, email, passwordHash, role, stripeAccountId || null]
     );
     return insert.rows[0];
@@ -64,7 +64,17 @@ export default class DB {
   // Look up a user by email. Returns the row or null.
   static async getUserByEmail(email: string) {
     if (!pool) throw new Error('Database not configured. Set DATABASE_URL in your environment.');
-    const res = await pool.query('SELECT userId, email, passwordHash, role, isActive, stripeAccountId, createdAt FROM "User" WHERE email = $1 LIMIT 1', [email]);
+    const res = await pool.query('SELECT userId, firstName, lastName, email, passwordHash, role, isActive, stripeAccountId, createdAt FROM renvestuser WHERE email = $1 LIMIT 1', [email]);
+    return res.rows[0] || null;
+  }
+
+  // Update a user's stripeAccountId using their email. Returns the updated row.
+  static async updateUserStripeAccount(email: string, stripeAccountId: string) {
+    if (!pool) throw new Error('Database not configured. Set DATABASE_URL in your environment.');
+    const res = await pool.query(
+      'UPDATE renvestuser SET stripeAccountId = $1 WHERE email = $2 RETURNING userId, firstName, lastName, email, role, stripeAccountId, createdAt',
+      [stripeAccountId, email]
+    );
     return res.rows[0] || null;
   }
 
