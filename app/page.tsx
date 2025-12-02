@@ -29,7 +29,7 @@ export default function Home() {
       <FAQ />
       {/* <Testimonials />
       <Articles /> */}
-      <Joinus />
+      {/* <Joinus /> */}
       <Insta />
     </main>
   )

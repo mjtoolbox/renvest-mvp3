@@ -12,6 +12,9 @@ CREATE TABLE "User" (
     userId UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) UNIQUE NOT NULL,
     passwordHash VARCHAR(255) NOT NULL, -- Stored securely
+
+    firstName VARCHAR(255) NOT NULL,
+    lastName VARCHAR(50) NOT NULL,
     
     -- Role and Status
     role UserRole NOT NULL,

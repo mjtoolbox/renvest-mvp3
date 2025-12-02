@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from 'next/link';
 import Contactusform from './Contactus';
 
 const Banner = () => {
@@ -18,7 +19,12 @@ const Banner = () => {
                         </h1>
                     </div>
                     <div className='my-7 text-center lg:text-start'>
-                        <Contactusform label="Join Now" buttonClass={'text-sm md:text-xl font-semibold hover:shadow-xl bg-blue text-white py-3 px-6 md:py-5 md:px-14 rounded-full hover:bg-hoblue'} />
+                        <div className='flex gap-4 items-center justify-center lg:justify-start'>
+                            <Contactusform label="Join Now" buttonClass={'text-sm md:text-xl font-semibold hover:shadow-xl bg-blue text-white py-3 px-6 md:py-5 md:px-14 rounded-full hover:bg-hoblue'} />
+                            <Link href="/signup" className='text-sm md:text-xl font-semibold rounded-full bg-white text-blue border border-blue py-3 px-6 md:py-5 md:px-14 hover:bg-lightgrey hover:shadow-md'>
+                                Sign Up
+                            </Link>
+                        </div>
                     </div>
                 </div>
 

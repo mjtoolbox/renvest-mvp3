@@ -50,6 +50,24 @@ export default class DB {
     return insert.rows[0];
   }
 
+  // Insert a fully-fledged User record into the User table.
+  static async insertUser(firstName: string, lastName: string, email: string, passwordHash: string, role: string, stripeAccountId?: string) {
+    if (!pool) throw new Error('Database not configured. Set DATABASE_URL in your environment.');
+
+    const insert = await pool.query(
+      'INSERT INTO "User" (firstName, lastName, email, passwordHash, role, stripeAccountId) VALUES ($1, $2, $3, $4, $5, $6) RETURNING userId, firstName, lastName, email, role, createdAt',
+      [firstName, lastName, email, passwordHash, role, stripeAccountId || null]
+    );
+    return insert.rows[0];
+  }
+
+  // Look up a user by email. Returns the row or null.
+  static async getUserByEmail(email: string) {
+    if (!pool) throw new Error('Database not configured. Set DATABASE_URL in your environment.');
+    const res = await pool.query('SELECT userId, email, passwordHash, role, isActive, stripeAccountId, createdAt FROM "User" WHERE email = $1 LIMIT 1', [email]);
+    return res.rows[0] || null;
+  }
+
   // Look up a contact by email. Returns the row or null.
   static async getContactByEmail(email: string) {
     if (!pool) throw new Error('Database not configured. Set DATABASE_URL in your environment.');
